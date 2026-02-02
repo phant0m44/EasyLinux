@@ -1,24 +1,22 @@
-let currentPort = null;
-let timeLeft = 7200;
+let timeLeft = 7200; 
+let currentSessionId = null;
 
 async function start() {
     const btn = document.querySelector("button");
-    btn.innerText = "Deploying Container...";
+    btn.innerText = "Deploying Personal Container...";
     btn.disabled = true;
 
     try {
         const res = await fetch("/api/start");
         if (!res.ok) throw new Error("Server error");
+        
         const data = await res.json();
-        currentPort = data.port;
+        currentSessionId = data.id;
 
         document.getElementById("welcome-screen").style.display = "none";
-        const container = document.getElementById("terminal-container");
-        container.style.display = "flex";
-
-        const frame = document.getElementById("terminal-frame");
-        frame.src = "http://" + window.location.hostname + ":" + currentPort;
-
+        document.getElementById("terminal-container").style.display = "flex";
+        document.getElementById("terminal-frame").src = data.url;
+        
         startTimers();
 
     } catch (e) {
@@ -29,7 +27,7 @@ async function start() {
 }
 
 function startTimers() {
-    setInterval(() => {
+    const timerInterval = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
             const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
@@ -38,18 +36,19 @@ function startTimers() {
             document.getElementById("timer").innerText = `${h}:${m}:${s}`;
         } else {
             document.getElementById("timer").innerText = "EXPIRED";
-            document.getElementById("timer").style.color = "red";
+            clearInterval(timerInterval);
         }
     }, 1000);
 
     setInterval(async () => {
-        if (!currentPort) return;
+        if (!currentSessionId) return;
+        
         try {
-            const res = await fetch(`/api/stats/${currentPort}`);
+            const res = await fetch(`/api/stats/${currentSessionId}`);
             const data = await res.json();
             document.getElementById("ram").innerText = data.ram;
         } catch (e) {
-            console.error("Stats error", e);
+            console.error(e);
         }
     }, 2000);
 }

@@ -1,15 +1,9 @@
 from flask import Flask, jsonify, send_from_directory, request
 import subprocess
-import random
 import time
+import uuid
 
 app = Flask(__name__)
-
-BASE_PORT = 9000
-MAX_PORT = 9080
-
-def free_port():
-    return random.randint(BASE_PORT, MAX_PORT)
 
 @app.route("/")
 def index():
@@ -21,35 +15,39 @@ def serve_static(filename):
 
 @app.route("/api/start")
 def start_terminal():
-    port = free_port()
+    session_id = uuid.uuid4().hex[:8]
+    container_name = f"term-{session_id}"
 
     subprocess.run([
         "docker", "run", "-d", "--rm",
-        "--name", f"term-{port}",
+        "--name", container_name,
+        "--network", "easylinux_app_net", 
         "--memory=256m",
         "--cpus=0.3",
-        "-p", f"{port}:7681",
         "terminal-image",
         "timeout", "7200",
-        "ttyd", "-p", "7681", "-W", "bash"
+        "ttyd", "-p", "7681", "-W", "-b", f"/terminal/{session_id}", "bash"
     ])
 
     time.sleep(2)
 
     return jsonify({
-        "port": port
+        "status": "ok", 
+        "id": session_id,
+        "url": f"/terminal/{session_id}/"
     })
 
-@app.route("/api/stats/<int:port>")
-def get_stats(port):
+@app.route("/api/stats/<session_id>")
+def get_stats(session_id):
     try:
+        container_name = f"term-{session_id}"
         result = subprocess.check_output(
-            f"docker stats term-{port} --no-stream --format '{{{{.MemUsage}}}}'", 
+            f"docker stats {container_name} --no-stream --format '{{{{.MemUsage}}}}'", 
             shell=True
         ).decode().strip()
         return jsonify({"ram": result})
     except:
-        return jsonify({"ram": "0MiB / 256MiB"})
+        return jsonify({"ram": "Offline (Expired)"})
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5555)
+    app.run(host="0.0.0.0", port=5000)

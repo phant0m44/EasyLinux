@@ -1,17 +1,46 @@
 version: "3.9"
 
+networks:
+  app_net:
+    driver: bridge
+
 services:
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "5555:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - app_net
+    depends_on:
+      - backend
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - app_net
+
   backend:
     build: ./backend
-    ports:
-      - "5555:5555"
+    restart: always
+    expose:
+      - "5000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./frontend:/app/frontend
+    networks:
+      - app_net
     depends_on:
       - terminal-image
-      
 
   terminal-image:
     build: ./terminal-image
     image: terminal-image
+    networks:
+      - app_net
