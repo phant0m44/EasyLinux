@@ -10,6 +10,8 @@ services:
       - ./frontend:/app/frontend
     depends_on:
       - terminal-image
+      
 
   terminal-image:
     build: ./terminal-image
+    image: terminal-image

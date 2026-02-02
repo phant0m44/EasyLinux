@@ -23,15 +23,18 @@ def serve_static(filename):
 def start_terminal():
     port = free_port()
 
+    start_ts = int(time.time())
+
     subprocess.run([
         "docker", "run", "-d", "--rm",
-        "--name", f"term-{port}",     
-        "--memory=256m",              
-        "--cpus=0.3",                
-        "-p", f"{port}:7681",         
+        "--name", f"term-{port}",
+        "--memory=256m",
+        "--cpus=0.3",
+        "-p", f"{port}:7681",
+        "-e", f"START_TS={start_ts}",
         "terminal-image",
-        "timeout", "7200",            # 2 hours livetime
-        "ttyd", "-p", "7681", "-W", "/bin/bash"
+        "timeout", "7200",
+        "ttyd", "-p", "7681", "-W", "tmux new-session -A -s main"
     ])
 
     time.sleep(3)
