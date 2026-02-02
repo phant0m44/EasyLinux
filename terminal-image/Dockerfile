@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     python3 python3-pip python3-venv \
     iputils-ping net-tools procps \
     ca-certificates \
-    btop mc neofetch
+    btop mc
 
 RUN curl -L \
     https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.x86_64 \
