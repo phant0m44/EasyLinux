@@ -3,13 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>EasyLinux</title>
-    <link rel="stylesheet" href="style.css">`
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="card">
-        <h1>EasyLinux - Web linux Terminal</h1>
-        <p>Clear debian kernel for testing and study</p>
-        <button onclick="start()">Run Terminal</button>
+
+    <div class="card" id="welcome-screen">
+        <h1>EasyLinux</h1>
+        <p>Debian Environment • Root Access • Safe</p>
+        <button onclick="start()">Launch Terminal</button>
+    </div>
+
+    <div id="terminal-container" style="display: none;">
+        <iframe id="terminal-frame"></iframe>
+        
+        <div class="status-bar">
+            <div class="stat-item">
+                <span>⏳ Time Left:</span>
+                <span id="timer" class="highlight">02:00:00</span>
+            </div>
+            <div class="stat-item">
+                <span>💾 RAM:</span>
+                <span id="ram" class="highlight">Loading...</span>
+            </div>
+            <div class="stat-item status-ok">
+                <span>🛡️ System Protected</span>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>

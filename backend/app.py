@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, send_from_directory, request
 import subprocess
 import random
 import time
@@ -22,7 +22,6 @@ def serve_static(filename):
 @app.route("/api/start")
 def start_terminal():
     port = free_port()
-    start_ts = int(time.time())
 
     subprocess.run([
         "docker", "run", "-d", "--rm",
@@ -30,10 +29,9 @@ def start_terminal():
         "--memory=256m",
         "--cpus=0.3",
         "-p", f"{port}:7681",
-        "-e", f"START_TS={start_ts}",
         "terminal-image",
         "timeout", "7200",
-        "ttyd", "-p", "7681", "-W", "tmux", "new-session", "-A", "-s", "main"
+        "ttyd", "-p", "7681", "-W", "bash"
     ])
 
     time.sleep(2)
@@ -41,6 +39,17 @@ def start_terminal():
     return jsonify({
         "port": port
     })
+
+@app.route("/api/stats/<int:port>")
+def get_stats(port):
+    try:
+        result = subprocess.check_output(
+            f"docker stats term-{port} --no-stream --format '{{{{.MemUsage}}}}'", 
+            shell=True
+        ).decode().strip()
+        return jsonify({"ram": result})
+    except:
+        return jsonify({"ram": "0MiB / 256MiB"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5555)
