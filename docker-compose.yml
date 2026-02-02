@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5555:5555"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - terminal-image
+
+  terminal-image:
+    build: ./terminal-image
