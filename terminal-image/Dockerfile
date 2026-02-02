@@ -25,4 +25,4 @@ USER user
 WORKDIR /home/user
 
 EXPOSE 7681
-CMD ["ttyd", "-p", "7681", "/bin/bash"]
+CMD ["bash"]

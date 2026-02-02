@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, send_from_directory
 import subprocess
 import random
+import time
 
 app = Flask(__name__)
 
@@ -21,15 +22,22 @@ def serve_static(filename):
 @app.route("/api/start")
 def start_terminal():
     port = free_port()
+
     subprocess.run([
         "docker", "run", "-d", "--rm",
-        "--memory=512m",
-        "--cpus=0.5",
-        "-p", f"{port}:7681",
-        "terminal-image"
+        "--name", f"term-{port}",     
+        "--memory=256m",              
+        "--cpus=0.3",                
+        "-p", f"{port}:7681",         
+        "terminal-image",
+        "timeout", "7200",            # 2 hours livetime
+        "ttyd", "-p", "7681", "-W", "/bin/bash"
     ])
+
+    time.sleep(3)
+
     return jsonify({
-        "url": f"http://localhost:{port}"
+        "port": port
     })
 
 if __name__ == "__main__":
