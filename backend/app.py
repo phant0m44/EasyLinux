@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, send_from_directory
 import subprocess
 import random
 
@@ -12,12 +12,15 @@ def free_port():
 
 @app.route("/")
 def index():
-    return render_template("frontend/index.html")
+    return send_from_directory('frontend', 'index.html')
+
+@app.route("/<path:filename>")
+def serve_static(filename):
+    return send_from_directory('frontend', filename)
 
 @app.route("/api/start")
 def start_terminal():
     port = free_port()
-
     subprocess.run([
         "docker", "run", "-d", "--rm",
         "--memory=512m",
@@ -25,7 +28,6 @@ def start_terminal():
         "-p", f"{port}:7681",
         "terminal-image"
     ])
-
     return jsonify({
         "url": f"http://localhost:{port}"
     })
