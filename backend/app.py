@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 import subprocess
 import random
 
@@ -9,6 +9,10 @@ MAX_PORT = 9080
 
 def free_port():
     return random.randint(BASE_PORT, MAX_PORT)
+
+@app.route("/")
+def index():
+    return render_template("frontend/index.html")
 
 @app.route("/api/start")
 def start_terminal():
