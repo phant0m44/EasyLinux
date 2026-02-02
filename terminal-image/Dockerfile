@@ -8,8 +8,7 @@ RUN apt-get update && apt-get install -y \
     build-essential gcc g++ make cmake \
     python3 python3-pip python3-venv \
     iputils-ping net-tools procps \
-    ca-certificates tmux gawk \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates tmux gawk
 
 RUN curl -L \
     https://github.com/tsl0922/ttyd/releases/download/${TTYD_VERSION}/ttyd.x86_64 \
@@ -48,7 +47,6 @@ else
 fi
 
 RAM=\$(free -m | awk '/Mem:/ { printf("%d MB", \$3) }')
-
 echo "⏳ Life: \$TIME_STR  |  💾 RAM: \$RAM  |  🛡️ Protected"
 EOF
 RUN chmod +x /usr/local/bin/status_bar.sh

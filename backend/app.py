@@ -22,7 +22,6 @@ def serve_static(filename):
 @app.route("/api/start")
 def start_terminal():
     port = free_port()
-
     start_ts = int(time.time())
 
     subprocess.run([
@@ -34,10 +33,10 @@ def start_terminal():
         "-e", f"START_TS={start_ts}",
         "terminal-image",
         "timeout", "7200",
-        "ttyd", "-p", "7681", "-W", "tmux new-session -A -s main"
+        "ttyd", "-p", "7681", "-W", "tmux", "new-session", "-A", "-s", "main"
     ])
 
-    time.sleep(3)
+    time.sleep(2)
 
     return jsonify({
         "port": port
