@@ -1,16 +1,16 @@
 * {
     box-sizing: border-box;
-    font-family: 'Consolas', 'Monaco', monospace; /* Шрифти як в терміналі */
+    font-family: 'Consolas', 'Monaco', monospace; /* Hacker fonts 😉 */
 }
 
 body {
     height: 100vh;
     margin: 0;
     background: #0f2027;
-    overflow: hidden; /* Щоб не було скролу */
+    overflow: hidden;
 }
 
-/* Привітальна картка */
+/* Welcome message */
 .card {
     position: absolute;
     top: 50%; left: 50%;
@@ -36,7 +36,7 @@ button {
 }
 button:hover { background: #00cc6a; }
 
-/* Контейнер терміналу */
+/* terminal container */
 #terminal-container {
     display: flex;
     flex-direction: column;
@@ -45,12 +45,12 @@ button:hover { background: #00cc6a; }
 }
 
 iframe {
-    flex-grow: 1; /* Займає весь вільний простір */
+    flex-grow: 1;
     border: none;
     width: 100%;
 }
 
-/* Нижня панель */
+/* footer panel */
 .status-bar {
     height: 35px;
     background: #1a1a1a;
